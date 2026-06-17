@@ -26,7 +26,7 @@ Registro, login, gestion de perfiles, verificacion de email, recuperacion de con
 ## Instalacion
 
 ```bash
-git clone https://github.com/6toInformatica/auth-node.git
+git clone https://github.com/<ORG>/auth-node.git
 cd auth-node
 pnpm install
 cp .env.example .env
@@ -152,7 +152,7 @@ curl http://localhost:3007/api/v1/auth/profile \
 
 ## Docker
 
-Stack completo desde [kinalsports-stack](https://github.com/6toInformatica/kinalsports-stack). En contenedor escucha en puerto **3007**; la base Postgres es el servicio `postgres` del compose (host **5435**).
+Stack completo desde el repositorio [kinalsports-stack](https://github.com/<ORG>/kinalsports-stack) de tu organización. En contenedor escucha en puerto **3007**; la base Postgres es el servicio `postgres` del compose (host **5435**).
 
 ## Autor y licencia
 
