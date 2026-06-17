@@ -1,0 +1,28 @@
+if ! git rev-parse --verify HEAD >/dev/null 2>&1; then
+  echo "[Husky] Primer commit detectado, omitiendo pre-commit."
+  exit 0
+fi
+
+echo "[Husky] Ejecutando lint-staged..."
+pnpm lint-staged
+status=$?
+if [ $status -ne 0 ]; then
+  echo ""
+  echo "✖ Lint-staged falló. Revisa los errores arriba."
+  echo ""
+  echo "Causas comunes:"
+  echo "  - Errores de ESLint que no se pueden auto-fixear"
+  echo "  - Warnings de ESLint (configurados como errores con --max-warnings=0)"
+  echo "  - Errores de formato con Prettier"
+  echo ""
+  echo "Soluciones:"
+  echo "  1. Revisa los mensajes de error específicos arriba"
+  echo "  2. Corrige manualmente los errores reportados"
+  echo "  3. Ejecuta 'pnpm exec eslint --fix .' para intentar auto-fix"
+  echo "  4. Ejecuta 'pnpm exec prettier --write .' para formatear"
+  echo "  5. Vuelve a hacer git add de los archivos corregidos"
+  echo "  6. Intenta el commit nuevamente"
+  exit 1
+fi
+
+exit $status

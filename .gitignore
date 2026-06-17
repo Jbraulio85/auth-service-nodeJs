@@ -1,0 +1,44 @@
+## [Node.js]
+node_modules/
+.pnpm-store/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+## [Environment]
+.env
+.env.*
+!.env.example
+
+## [Logs]
+logs/
+*.log
+
+## [Build]
+dist/
+build/
+
+## [Uploads]
+uploads/
+
+## [OS Specific]
+.DS_Store
+Thumbs.db
+
+## [VSCode]
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+## [GitHub]
+.github/
+
+## [Cursor]
+.cursor/
+
+## [Caches de lint y tests]
+coverage/
+.eslintcache

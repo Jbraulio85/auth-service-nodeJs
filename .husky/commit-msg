@@ -1,0 +1,20 @@
+pnpm exec commitlint --edit "$1"
+status=$?
+if [ $status -ne 0 ]; then
+	echo ""
+	echo "✖ El mensaje de commit no cumple el formato convencional."
+	echo "Formato esperado: <tipo>(<scope opcional>): <descripcion en minusculas>"
+	echo "Tipos permitidos: feat, fix, chore, docs, refactor, test, perf, ci, build, style, revert"
+	echo "Reglas clave:"
+	echo "  - tipo en minúsculas"
+	echo "  - scope opcional entre paréntesis sin espacios (ej: server-admin)"
+	echo "  - dos puntos y espacio tras el cierre del scope"
+	echo "  - descripción breve en minúsculas / sentence-case (sin punto final)"
+	echo "Ejemplos válidos:"
+	echo "  feat(server-admin): agregar endpoint de reservas"
+	echo "  fix(auth-node): corregir expiracion de token"
+	echo "  chore(lint): actualizar configuracion eslint"
+	echo "  docs: añadir guia de despliegue"
+	echo "Si necesitas ayuda interactiva puedes usar: pnpm commit"
+fi
+exit $status
