@@ -1,6 +1,6 @@
 import { asyncHandler } from '../../middlewares/server-genericError-handler.js';
 import { validateJWT } from '../../middlewares/validate-JWT.js';
-import { findUserById } from '../../helpers/user-db.js';
+import { findUserById, getAllUsers } from '../../helpers/user-db.js';
 import {
   getUserRoleNames,
   getUsersByRole as repoGetUsersByRole,
@@ -18,6 +18,18 @@ const ensureAdmin = async (req) => {
     (await getUserRoleNames(currentUserId));
   return roles.includes(ADMIN_ROLE);
 };
+
+export const getAllUsersHandler = [
+  validateJWT,
+  asyncHandler(async (req, res) => {
+    if (!(await ensureAdmin(req))) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+
+    const users = await getAllUsers();
+    return res.status(200).json(users.map(buildUserResponse));
+  }),
+];
 
 export const updateUserRole = [
   validateJWT,

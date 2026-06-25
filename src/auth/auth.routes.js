@@ -15,6 +15,7 @@ import {
   validateForgotPassword,
   validateResetPassword,
 } from '../../middlewares/validation.js';
+import { getAllUsersHandler } from '../users/user.controller.js';
 
 const router = Router();
 // Refresh token endpoints
@@ -263,6 +264,8 @@ router.post(
  *         description: Email no verificado
  */
 router.get('/profile', validateJWT, authController.getProfile);
+
+router.get('/users', ...getAllUsersHandler);
 
 router.post(
   '/profile/picture',

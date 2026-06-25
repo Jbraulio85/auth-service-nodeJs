@@ -64,6 +64,26 @@ export const findUserById = async (userId) => {
   }
 };
 
+export const getAllUsers = async () => {
+  try {
+    return await User.findAll({
+      include: [
+        { model: UserProfile, as: 'UserProfile' },
+        { model: UserEmail, as: 'UserEmail' },
+        {
+          model: UserRole,
+          as: 'UserRoles',
+          include: [{ model: Role, as: 'Role' }],
+        },
+      ],
+      order: [['CreatedAt', 'DESC']],
+    });
+  } catch (error) {
+    console.error('Error listando usuarios:', error);
+    throw new Error('Error al listar usuarios');
+  }
+};
+
 export const checkUserExists = async (email, username) => {
   try {
     const existingUser = await User.findOne({
