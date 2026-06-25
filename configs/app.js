@@ -8,6 +8,7 @@ import { dbConnection } from './db.js';
 // Ensure models are registered before DB sync
 import '../src/users/user.model.js';
 import '../src/auth/role.model.js';
+import '../src/auth/refreshToken.model.js';
 import { requestLimit } from '../middlewares/request-limit.js';
 import { corsOptions } from './cors-configuration.js';
 import { helmetConfiguration } from './helmet-configuration.js';
