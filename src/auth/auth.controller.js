@@ -18,7 +18,7 @@ export const register = asyncHandler(async (req, res) => {
     // Agregar la imagen de perfil si fue subida
     const userData = {
       ...req.body,
-      profilePicture: req.file ? req.file.path : null,
+      profilePicture: req.file || null,
     };
 
     const result = await registerUserHelper(userData);
@@ -237,7 +237,7 @@ export const updateProfilePicture = asyncHandler(async (req, res) => {
     });
   }
 
-  const user = await updateProfilePictureHelper(userId, req.file.path);
+  const user = await updateProfilePictureHelper(userId, req.file);
 
   return res.status(200).json({
     success: true,

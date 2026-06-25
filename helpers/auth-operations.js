@@ -1,5 +1,4 @@
 import { saveRefreshToken } from './refresh-token.js';
-import crypto from 'crypto';
 import {
   checkUserExists,
   createNewUser,
@@ -20,8 +19,7 @@ import { verifyPassword } from '../utils/password-utils.js';
 import { buildUserResponse } from '../utils/user-helpers.js';
 import { sendVerificationEmail } from './email-service.js';
 import { generateJWT } from './generate-jwt.js';
-import path from 'path';
-import { uploadImage } from './cloudinary-service.js';
+import { uploadImageFromMulterFile } from './cloudinary-service.js';
 import { config } from '../configs/config.js';
 
 export const registerUserHelper = async (userData) => {
@@ -36,53 +34,32 @@ export const registerUserHelper = async (userData) => {
         'Ya existe un usuario con este email o nombre de usuario'
       );
     }
-    let profilePictureToStore = profilePicture;
-    if (profilePicture) {
-      const uploadPath = config.upload.uploadPath;
-
-      // Detectar si es un archivo local
-      const isLocalFile =
-        profilePicture.includes('uploads/') ||
-        profilePicture.includes(uploadPath) ||
-        profilePicture.startsWith('./');
-
-      if (isLocalFile) {
-        try {
-          // Generar nombre como .NET: profile-<12chars>.jpg
-          const ext = path.extname(profilePicture);
-          const randomHex = crypto.randomBytes(6).toString('hex');
-          const cloudinaryFileName = `profile-${randomHex}${ext}`;
-
-          profilePictureToStore = await uploadImage(
-            profilePicture,
-            cloudinaryFileName
-          );
-        } catch (err) {
-          console.error(
-            'Error uploading profile picture to Cloudinary during registration:',
-            err
-          );
-          profilePictureToStore = null;
+    let profilePictureToStore = null;
+    if (profilePicture?.buffer || profilePicture?.path) {
+      try {
+        profilePictureToStore = await uploadImageFromMulterFile(profilePicture);
+      } catch (err) {
+        console.error(
+          'Error uploading profile picture to Cloudinary during registration:',
+          err
+        );
+        profilePictureToStore = null;
+      }
+    } else if (typeof profilePicture === 'string' && profilePicture) {
+      try {
+        const baseUrl = config.cloudinary.baseUrl || '';
+        const folder = config.cloudinary.folder || '';
+        let normalized = profilePicture;
+        if (normalized.startsWith(baseUrl)) {
+          normalized = normalized.slice(baseUrl.length);
         }
-      } else {
-        // Si viene una URL/ruta de Cloudinary, normalizar y almacenar solo el filename
-        try {
-          const baseUrl = config.cloudinary.baseUrl || '';
-          const folder = config.cloudinary.folder || '';
-          let normalized = profilePicture;
-          if (normalized.startsWith(baseUrl)) {
-            normalized = normalized.slice(baseUrl.length);
-          }
-          if (folder && normalized.startsWith(`${folder}/`)) {
-            normalized = normalized.slice(folder.length + 1);
-          }
-          // Si aún hay slashes, tomar el último segmento
-          profilePictureToStore = normalized.split('/').pop();
-        } catch (normErr) {
-          console.warn('Could not normalize profile picture path:', normErr);
-          // fallback: mantener nulo para usar el default
-          profilePictureToStore = null;
+        if (folder && normalized.startsWith(`${folder}/`)) {
+          normalized = normalized.slice(folder.length + 1);
         }
+        profilePictureToStore = normalized.split('/').pop();
+      } catch (normErr) {
+        console.warn('Could not normalize profile picture path:', normErr);
+        profilePictureToStore = null;
       }
     }
 

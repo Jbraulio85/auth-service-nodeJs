@@ -1,4 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
+import crypto from 'crypto';
+import path from 'path';
 import { config } from '../configs/config.js';
 import fs from 'fs/promises';
 
@@ -52,6 +54,51 @@ export const uploadImage = async (filePath, fileName) => {
       `Failed to upload image to Cloudinary: ${error?.message || ''}`
     );
   }
+};
+
+export const uploadImageBuffer = async (buffer, fileName) => {
+  const folder = config.cloudinary.folder;
+  const options = {
+    public_id: fileName,
+    folder,
+    resource_type: 'image',
+    transformation: [
+      { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+      { quality: 'auto', fetch_format: 'auto' },
+    ],
+  };
+
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      options,
+      (error, result) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve(`v${result.version}/${result.public_id}.${result.format}`);
+      }
+    );
+
+    uploadStream.end(buffer);
+  });
+};
+
+export const uploadImageFromMulterFile = async (file) => {
+  const ext = path.extname(file.originalname || '') || '.jpg';
+  const randomHex = crypto.randomBytes(6).toString('hex');
+  const fileName = `profile-${randomHex}${ext}`;
+
+  if (file.buffer) {
+    return uploadImageBuffer(file.buffer, fileName);
+  }
+
+  if (file.path) {
+    return uploadImage(file.path, fileName);
+  }
+
+  throw new Error('Archivo de imagen invalido');
 };
 
 export const deleteImage = async (imagePath) => {
@@ -122,6 +169,8 @@ export const getDefaultAvatarPath = () => {
 
 export default {
   uploadImage,
+  uploadImageBuffer,
+  uploadImageFromMulterFile,
   deleteImage,
   getFullImageUrl,
   getDefaultAvatarUrl,
