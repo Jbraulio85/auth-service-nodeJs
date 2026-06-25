@@ -44,20 +44,25 @@ const routes = (app) => {
   app.use(notFound);
 };
 
-export const initServer = async () => {
+export const createApp = async () => {
   const app = express();
-  const PORT = process.env.PORT;
   app.set('trust proxy', 1);
 
-  try {
-    await dbConnection();
-    // Seed essential data (roles)
-    const { seedRoles } = await import('../helpers/role-seed.js');
-    await seedRoles();
-    middlewares(app);
-    routes(app);
+  await dbConnection();
+  const { seedRoles } = await import('../helpers/role-seed.js');
+  await seedRoles();
+  middlewares(app);
+  routes(app);
+  app.use(errorHandler);
 
-    app.use(errorHandler);
+  return app;
+};
+
+export const initServer = async () => {
+  const PORT = process.env.PORT || 3007;
+
+  try {
+    const app = await createApp();
 
     app.listen(PORT, () => {
       console.log(`KinalSports Auth Server running on port ${PORT}`);
