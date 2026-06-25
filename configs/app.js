@@ -67,7 +67,9 @@ export const createApp = async () => {
 
   await dbConnection();
   const { seedRoles } = await import('../helpers/role-seed.js');
+  const { seedAdminUser } = await import('../helpers/admin-seed.js');
   await seedRoles();
+  await seedAdminUser();
   middlewares(app);
   routes(app);
   app.use(errorHandler);

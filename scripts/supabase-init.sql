@@ -1,5 +1,12 @@
 -- Ejecutar una vez en Supabase: SQL Editor > New query > Run
 -- Crea el schema de auth-node en PostgreSQL
+--
+-- Nota: el usuario admin NO va en este SQL (la contraseña debe hashearse con Argon2).
+-- Se crea automaticamente al primer arranque si no hay usuarios (helpers/admin-seed.js):
+--   username: admin
+--   email:    admin@ksports.local
+--   password: Admin1234!
+-- Cambia la contraseña despues del primer login en produccion.
 
 CREATE TABLE IF NOT EXISTS roles (
   id VARCHAR(16) PRIMARY KEY,
